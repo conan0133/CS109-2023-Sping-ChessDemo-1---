@@ -27,6 +27,7 @@ public class BeginFrame extends JFrame{
         setLayout(null);
 
         addBeginButton();
+        addAIButton();
     }
 
 
@@ -40,7 +41,21 @@ public class BeginFrame extends JFrame{
             setVisible(false);
             frame.setVisible(true);
         });
-        button.setLocation(HEIGTH/2, HEIGTH / 10 + 120);
+        button.setLocation(HEIGTH/2, HEIGTH / 10 + 80);
+        button.setSize(200, 60);
+        button.setFont(new Font("Rockwell", Font.BOLD, 20));
+        add(button);
+    }
+
+    private void addAIButton() {
+        JButton button = new JButton("人机对战");
+        button.addActionListener((e) -> {
+            setVisible(false);
+            frame.setVisible(true);
+            frame.getGameController().setRandomBotOn(true);
+            frame.getGameController().setIsRandomBotOn(true);
+        });
+        button.setLocation(HEIGTH/2, HEIGTH / 10 + 160);
         button.setSize(200, 60);
         button.setFont(new Font("Rockwell", Font.BOLD, 20));
         add(button);

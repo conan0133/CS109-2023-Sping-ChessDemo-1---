@@ -23,7 +23,7 @@ public class ChessComponent extends JComponent{
         setVisible(true);
     }
 
-   
+
 
 
 

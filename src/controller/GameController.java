@@ -35,6 +35,9 @@ public class GameController implements GameListener {
     private ChessboardPoint selectedPoint;
     private ChessGameFrame frame;
     public PlayerColor winner;
+    private RandomBot randomBot;
+    private boolean randomBotOn;//把AI打开（load时需关闭
+    private boolean isRandomBotOn;//判断我到底开没开AI
 
 
     // Record whether there is a selected piece before
@@ -42,6 +45,10 @@ public class GameController implements GameListener {
         this.view = view;
         this.model = model;
         this.currentPlayer = PlayerColor.BLUE;
+        randomBot=new RandomBot();
+        randomBot.registerChessboard(model);
+        randomBot.registerController(this);
+        randomBot.registerChessboardComponent(view);
 
         view.registerController(this);
         initialize();
@@ -64,24 +71,33 @@ public class GameController implements GameListener {
     }
 
     // after a valid move swap the player
-    private int n=0;
+    public void setRandomBotOn(boolean b){randomBotOn=b;}
+    public void setIsRandomBotOn(boolean b){isRandomBotOn=b;}
+
     private void swapColor() {
         currentPlayer = currentPlayer == PlayerColor.BLUE ? PlayerColor.RED : PlayerColor.BLUE;
-        n++;
         if(currentPlayer==PlayerColor.BLUE){
             frame.getLabel().setText("turn: "+(model.getTurn().size()+2)/2+" BLUE");
         }else{
             frame.getLabel().setText("turn: "+(model.getTurn().size()+1)/2+" RED");
         }
+
+//假装这样真的可以把AI装上去
+        if(randomBotOn){
+            if(currentPlayer==PlayerColor.RED){
+                randomBot.run();
+                swapColor();
+            }
+        }
     }
 
-    private boolean win() {
+    public boolean win() {
         if(model.getChessPieceAt(new ChessboardPoint(0,3))!=null||model.getRedDead()==8||model.getChessPieceAt(new ChessboardPoint(8,3))!=null||model.getBlueDead()==8){return true;}
         return false;
         // TODO: Check the board if there is a winner
     }
 
-    private void checkWin() {
+    public void checkWin() {
         if(model.getChessPieceAt(new ChessboardPoint(0,3))!=null||model.getRedDead()==8){
             this.winner=PlayerColor.BLUE;
             JOptionPane.showMessageDialog(frame, "BLUE WIN !");
@@ -95,7 +111,7 @@ public class GameController implements GameListener {
 
     public void regret(){
         //getTurn得到的是一个Arraylist,你理智点，，，
-        if(model.getTurn().size()>0){
+        if(model.getTurn().size()>0&&!randomBotOn){
             Turn t=model.getTurn().get(model.getTurn().size()-1);
             model.regret();
             ChessboardPoint dest=t.getDest();
@@ -105,6 +121,25 @@ public class GameController implements GameListener {
             if(deadChess!=null){view.setChessComponentAtGrid(dest,view.getChessComponent(deadChess));}
             selectedPoint = null;
             swapColor();
+            view.repaint();
+        }
+        if(model.getTurn().size()>0&&randomBotOn){
+            Turn t=model.getTurn().get(model.getTurn().size()-1);
+            model.regret();
+            ChessboardPoint dest=t.getDest();
+            ChessboardPoint src=t.getSrc();
+            ChessPiece deadChess=t.getDeadChess();
+            view.setChessComponentAtGrid(src,view.removeChessComponentAtGrid(dest));
+            if(deadChess!=null){view.setChessComponentAtGrid(dest,view.getChessComponent(deadChess));}
+
+            Turn t2=model.getTurn().get(model.getTurn().size()-1);
+            model.regret();
+            ChessboardPoint dest2=t2.getDest();
+            ChessboardPoint src2=t2.getSrc();
+            ChessPiece deadChess2=t2.getDeadChess();
+            view.setChessComponentAtGrid(src2,view.removeChessComponentAtGrid(dest2));
+            if(deadChess!=null){view.setChessComponentAtGrid(dest2,view.getChessComponent(deadChess2));}
+            frame.getLabel().setText("turn: "+(model.getTurn().size()+2)/2+" BLUE");
             view.repaint();
         }
     }
@@ -139,7 +174,6 @@ public class GameController implements GameListener {
             selectedPoint = null;
             swapColor();
             view.repaint();
-            checkWin();
             if(win()){checkWin();}
             }
         }
@@ -231,6 +265,7 @@ public class GameController implements GameListener {
     }
 
     public void loadGameFromFile() throws IOException {
+        randomBotOn=false;
         JFileChooser chooser=new JFileChooser();
         chooser.setCurrentDirectory(new File("D:\\java\\斗兽棋\\CS109-2023-Sping-ChessDemo(1)-副本\\save"));
         chooser.showOpenDialog(view);
@@ -293,11 +328,9 @@ public class GameController implements GameListener {
                     view.repaint();
                 }
             }
+            if(isRandomBotOn){randomBotOn=true;}
         }
     }
-
-
-
 
 
 

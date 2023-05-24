@@ -6,6 +6,8 @@ import model.MusicPlayer;
 import javax.swing.*;
 import javax.swing.plaf.basic.DefaultMenuLayout;
 import java.awt.*;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
 import java.io.IOException;
 
 /**
@@ -13,9 +15,9 @@ import java.io.IOException;
  */
 public class ChessGameFrame extends JFrame {
     //    public final Dimension FRAME_SIZE ;
-    private final int WIDTH;
-    private final int HEIGTH;
-    private final int ONE_CHESS_SIZE;
+    private  int WIDTH;
+    private  int HEIGTH;
+    private  int ONE_CHESS_SIZE;
     private GameController gameController;
     private ChessboardComponent chessboardComponent;
     private JLabel j = new JLabel();
@@ -40,10 +42,12 @@ public class ChessGameFrame extends JFrame {
         addRegretButton();
         addLabel();
         addChessboard();
-        addChangeTheme();
         backGround();
 
+
     }
+
+
 
     public int getHeight(){return HEIGTH;}
     public int getWidth(){return WIDTH;}
@@ -51,18 +55,7 @@ public class ChessGameFrame extends JFrame {
     public JLabel getI(){return i;}
 
 
-    private void addChangeTheme(){
-        JButton button = new JButton("ChangeTheme");
-        button.setLocation(HEIGTH, HEIGTH / 10 +120);
-        button.setSize(200, 60);
-        button.setFont(new Font("Rockwell", Font.BOLD, 20));
-        add(button);
 
-        button.addActionListener(e -> {
-            chessboardComponent.changeTheme();
-            changeBackGround();
-        });
-    }
     private void backGround(){
         Image image1=new ImageIcon("D:\\java\\斗兽棋\\CS109-2023-Sping-ChessDemo(1)-副本\\resource\\OIP-C.png").getImage().getScaledInstance(WIDTH,HEIGTH,Image.SCALE_SMOOTH);
         ImageIcon imageI=new ImageIcon(image1);
@@ -80,7 +73,7 @@ public class ChessGameFrame extends JFrame {
         add(i);
         i.setVisible(false);
     }
-    private void changeBackGround(){
+    public void changeBackGround(){
         if(x){
             j.setVisible(false);
             i.setVisible(true);
@@ -100,6 +93,9 @@ public class ChessGameFrame extends JFrame {
     public void registerController(GameController gameController) {
         this.gameController = gameController;
     }
+
+    public GameController getGameController() {return gameController;}
+
     /**
      * 在游戏面板中添加棋盘
      */
@@ -120,7 +116,7 @@ public class ChessGameFrame extends JFrame {
     public JLabel getLabel(){return Label;}
     public void addLabel() {
         Label.setLocation(HEIGTH, HEIGTH / 10);
-        Label.setSize(200, 60);
+        Label.setSize(WIDTH/5, HEIGTH/14);
         Label.setFont(new Font("Rockwell", Font.BOLD, 20));
         add(Label);
     }
@@ -131,13 +127,13 @@ public class ChessGameFrame extends JFrame {
 
     private void addSettingButton(){
         JButton button = new JButton("setting");
-        button.setLocation(HEIGTH, HEIGTH / 10 + 600);
-        button.setSize(200, 60);
+        button.setLocation(HEIGTH, HEIGTH / 10 +HEIGTH*10/14);
+        button.setSize(WIDTH/5, HEIGTH/14);
         button.setFont(new Font("Rockwell", Font.BOLD, 20));
         add(button);
 
         button.addActionListener(e -> {
-            settingframe frame=new settingframe(600,1100,gameController,this);
+            settingframe frame=new settingframe(WIDTH/2,HEIGTH,gameController,this);
             frame.setVisible(true);
         });
     }
@@ -145,8 +141,8 @@ public class ChessGameFrame extends JFrame {
 
     private void addRegretButton(){
         JButton button = new JButton("Regret");
-        button.setLocation(HEIGTH, HEIGTH / 10 + 480);
-        button.setSize(200, 60);
+        button.setLocation(HEIGTH, HEIGTH / 10 +HEIGTH*8/14);
+        button.setSize(WIDTH/5, HEIGTH/14);
         button.setFont(new Font("Rockwell", Font.BOLD, 20));
         add(button);
 

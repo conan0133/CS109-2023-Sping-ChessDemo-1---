@@ -31,6 +31,7 @@ public class settingframe extends JFrame{
         setLayout(null);
 
         addRestartButton();
+        addChangeTheme();
         addLoadButton();
         addSaveButton();
         addMusicButton();
@@ -38,10 +39,24 @@ public class settingframe extends JFrame{
 
     }
 
+
+
+    private void addChangeTheme(){
+        JButton button = new JButton("ChangeTheme");
+        button.setLocation(w/4+40, h / 10 +120);
+        button.setSize(200, 60);
+        button.setFont(new Font("Rockwell", Font.BOLD, 20));
+        add(button);
+
+        button.addActionListener(e -> {
+            chessboardComponent.changeTheme();
+            chessGameFrame.changeBackGround();
+        });
+    }
     private void addRestartButton() {
         JButton button = new JButton("重新开始");
         button.addActionListener((e) -> {gameController.restart();});
-        button.setLocation(w/4+40, h / 10 + 120);
+        button.setLocation(w/4+40, h / 10 );
         button.setSize(200, 60);
         button.setFont(new Font("Rockwell", Font.BOLD, 20));
         add(button);

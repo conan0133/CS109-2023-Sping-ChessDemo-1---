@@ -28,11 +28,11 @@ public class ChessboardComponent extends JComponent {
     private final Set<ChessboardPoint> riverCell = new HashSet<>();
     private final Set<ChessboardPoint> densCell= new HashSet<>();
     private final Set<ChessboardPoint> trapCell= new HashSet<>();
-    private final Set<ChessboardPoint> ColorCell=new HashSet<>();
     private int x=0;
 
 
     private GameController gameController;
+    public GameController getGameController(){return gameController;}
 
 
     public ChessboardComponent(int chessSize) {
@@ -126,20 +126,20 @@ public class ChessboardComponent extends JComponent {
                 ChessboardPoint temp = new ChessboardPoint(i, j);
                 CellComponent cell;
                 if (riverCell.contains(temp)) {
-                    cell = new CellComponent(new Color(74, 178, 243), calculatePoint(i, j), CHESS_SIZE);
-                    this.add(cell);
+                    cell = new CellComponent(new Color(74, 178, 243), calculatePoint(i, j), CHESS_SIZE,this,i,j);
+                    this.add(cell,0);
                 }
                 else if(densCell.contains(temp)){
-                    cell = new CellComponent(Color.orange,calculatePoint(i,j),CHESS_SIZE);
-                    this.add(cell);
+                    cell = new CellComponent(Color.orange,calculatePoint(i,j),CHESS_SIZE,this,i,j);
+                    this.add(cell,0);
                 }
                 else if(trapCell.contains(temp)){
-                    cell = new CellComponent(Color.white,calculatePoint(i,j),CHESS_SIZE);
-                    this.add(cell);
+                    cell = new CellComponent(Color.white,calculatePoint(i,j),CHESS_SIZE,this,i,j);
+                    this.add(cell,0);
                 }
                 else {
-                    cell = new CellComponent(new Color(204, 202, 202), calculatePoint(i, j), CHESS_SIZE);
-                    this.add(cell);
+                    cell = new CellComponent(new Color(204, 202, 202), calculatePoint(i, j), CHESS_SIZE,this,i,j);
+                    this.add(cell,0);
                 }
                 gridComponents[i][j] = cell;
             }
@@ -207,7 +207,7 @@ public class ChessboardComponent extends JComponent {
         return gridComponents[point.getRow()][point.getCol()];
     }
 
-    private ChessboardPoint getChessboardPoint(Point point) {
+    public ChessboardPoint getChessboardPoint(Point point) {
         System.out.println("[" + point.y/CHESS_SIZE +  ", " +point.x/CHESS_SIZE + "] Clicked");
         return new ChessboardPoint(point.y/CHESS_SIZE, point.x/CHESS_SIZE);
     }
@@ -222,8 +222,8 @@ public class ChessboardComponent extends JComponent {
         ((Graphics2D) g).setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
     }
 
-    @Override
-    protected void processMouseEvent(MouseEvent e) {
+
+    protected void processMouseEvent(MouseEvent e,int x,int y) {
         if (e.getID() == MouseEvent.MOUSE_PRESSED) {
             try {
                 new SoundEffect().playSoundEffect();
@@ -234,17 +234,18 @@ public class ChessboardComponent extends JComponent {
             } catch (IOException ex) {
                 throw new RuntimeException(ex);
             }
-            JComponent clickedComponent = (JComponent) getComponentAt(e.getX(), e.getY());
+            JComponent clickedComponent = (JComponent) getComponentAt(e.getX()+y*CHESS_SIZE, e.getY()+x*CHESS_SIZE);
+            //System.out.println(e.getX()+e.getY());
+            //System.out.println(getChessboardPoint(e.getPoint()));
             if (clickedComponent.getComponentCount() == 0) {
                 System.out.print("None chess here and ");
-                gameController.onPlayerClickCell(getChessboardPoint(e.getPoint()), (CellComponent) clickedComponent);
+                gameController.onPlayerClickCell(new ChessboardPoint(x,y), (CellComponent) clickedComponent);
             } else {
                 System.out.print("One chess here and ");
-                gameController.onPlayerClickChessPiece(getChessboardPoint(e.getPoint()), (ChessComponent) clickedComponent.getComponents()[0]);
+                gameController.onPlayerClickChessPiece(new ChessboardPoint(x,y), (ChessComponent) clickedComponent.getComponents()[0]);
             }
         }
     }
-
 
 
 
