@@ -36,8 +36,10 @@ public class GameController implements GameListener {
     private ChessGameFrame frame;
     public PlayerColor winner;
     private RandomBot randomBot;
+    private NormalBot normalBot;
     private boolean randomBotOn;//把AI打开（load时需关闭
     private boolean isRandomBotOn;//判断我到底开没开AI
+    public boolean botType;
 
 
     // Record whether there is a selected piece before
@@ -45,10 +47,14 @@ public class GameController implements GameListener {
         this.view = view;
         this.model = model;
         this.currentPlayer = PlayerColor.BLUE;
-        randomBot=new RandomBot();
+        this.randomBot=new RandomBot();
+        this.normalBot=new normalBot();
         randomBot.registerChessboard(model);
         randomBot.registerController(this);
         randomBot.registerChessboardComponent(view);
+        normalBot.registerChessboard(model);
+        normalBot.registerController(this);
+        normalBot.registerChessboardComponent(view);
 
         view.registerController(this);
         initialize();
@@ -85,7 +91,11 @@ public class GameController implements GameListener {
 //假装这样真的可以把AI装上去
         if(randomBotOn){
             if(currentPlayer==PlayerColor.RED){
-                randomBot.run();
+                if(botType){
+                    randomBot.run();
+                } else if (!botType) {
+                    normalBot.run();
+                }
                 swapColor();
             }
         }

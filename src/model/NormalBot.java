@@ -9,7 +9,7 @@ import java.util.Random;
 import static model.Constant.CHESSBOARD_COL_SIZE;
 import static model.Constant.CHESSBOARD_ROW_SIZE;
 
-public class nomalBot {
+public class NormalBot {
     private Random random;
     private ChessboardPoint src;
     private ChessboardPoint dest;
@@ -32,7 +32,7 @@ public class nomalBot {
         view = chessboardComponent;
     }
 
-    public nomalBot() {
+    public NormalBot() {
         this.random = new Random();
         possibleDest=new ArrayList<ChessboardPoint>();
         possibleSrc=new ArrayList<ChessboardPoint>();
