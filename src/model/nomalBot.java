@@ -9,7 +9,7 @@ import java.util.Random;
 import static model.Constant.CHESSBOARD_COL_SIZE;
 import static model.Constant.CHESSBOARD_ROW_SIZE;
 
-public class RandomBot {
+public class nomalBot {
     private Random random;
     private ChessboardPoint src;
     private ChessboardPoint dest;
@@ -32,7 +32,7 @@ public class RandomBot {
         view = chessboardComponent;
     }
 
-    public RandomBot() {
+    public nomalBot() {
         this.random = new Random();
         possibleDest=new ArrayList<ChessboardPoint>();
         possibleSrc=new ArrayList<ChessboardPoint>();
@@ -85,7 +85,6 @@ public class RandomBot {
     }
 
 
-
     public ChessboardPoint dest(){
         for (int i = 0; i < Constant.CHESSBOARD_ROW_SIZE.getNum(); i++) {
             for (int j = 0; j < Constant.CHESSBOARD_COL_SIZE.getNum(); j++) {
@@ -95,15 +94,33 @@ public class RandomBot {
                 }
             }
         }
-        int rank=random.nextInt(0, possibleDest.size());
-        dest=possibleDest.get(rank);
 
-    System.out.println("destok");
-        // 返回移动指令
-    System.out.println(dest);
-    possibleDest.clear();
-    return dest;
+        ArrayList<Integer> value = new ArrayList<>();
+        for(int i=0;i<possibleDest.size();i++){
+            ChessboardPoint point = possibleDest.get(i);
+            int x = point.getRow();
+            int y = point.getCol();
+            if(y<=3){
+                if(model.isValidCapture(src,point)) {
+                    value.add(x + y+model.getChessPieceAt(point).getRank);
+                }else value.add(x+y);
+            }else{
+                if(model.isValidCapture(src,point)) {
+                    value.add(x + (6 - y)+model.getChessPieceAt(point).getRank);
+                }else value.add(x+(6-y));
+            }
+        }
+        int max = value.get(0);
+        for(int i=1;i<possibleDest.size();i++){
+            if(value.get(i)>max){
+                max=value.get(i);
+            }
+        }
+        int index = value.indexOf(max);
+        dest = possibleDest.get(index)
+        return dest;
     }
+
 
     public void run(){
         src=src();
