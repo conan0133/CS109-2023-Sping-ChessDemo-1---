@@ -54,38 +54,35 @@ public class RandomBot {
             }
         }
 
-        if(possibleSrc.size()==1){
-            int r = 0;
-            src=possibleSrc.get(r);
-        }
-        if(possibleSrc.size()>1){
+        do{
             int r=random.nextInt(0, possibleSrc.size());
             src=possibleSrc.get(r);
-        }
-        System.out.println("srcok");
-        System.out.println(src);
-        //判断存不存在可以走的格子
-        for(int k=0;k<possibleSrc.size();k++){
-            ChessboardPoint srcK=possibleSrc.get(k);
-            for (int i = 0; i < Constant.CHESSBOARD_ROW_SIZE.getNum(); i++) {
-                for (int j = 0; j < Constant.CHESSBOARD_COL_SIZE.getNum(); j++) {
-                    ChessboardPoint possibledest = new ChessboardPoint(i,j);
-                    if(model.isValidMove(srcK,possibledest)||model.isValidCapture(srcK,possibledest)){
-                        possibleDest.add(possibledest);
+
+            //判断存不存在可以走的格子
+            for(int k=0;k<possibleSrc.size();k++){
+                ChessboardPoint srcK=possibleSrc.get(k);
+                for (int i = 0; i < Constant.CHESSBOARD_ROW_SIZE.getNum(); i++) {
+                    for (int j = 0; j < Constant.CHESSBOARD_COL_SIZE.getNum(); j++) {
+                        ChessboardPoint possibledest = new ChessboardPoint(i,j);
+                        if(model.isValidMove(srcK,possibledest)||model.isValidCapture(srcK,possibledest)){
+                            possibleDest.add(possibledest);
+                        }
                     }
                 }
             }
-        }
-        if(possibleDest.size()==0){
-            isSrcExit=false;
-        }
+            if(possibleDest.size()==0){
+                isSrcExit=false;
+            }else isSrcExit=true;
+        }while(!isSrcExit);
+
+        System.out.println("srcok");
+        System.out.println(src);
         possibleDest.clear();
         possibleSrc.clear();
 
         return src;
 
     }
-
 
 
     public ChessboardPoint dest(){
@@ -97,25 +94,33 @@ public class RandomBot {
                 }
             }
         }
-        if(possibleDest.size()==0&&isSrcExit){
-            src();
-            dest();
+
+        ArrayList<Integer> value = new ArrayList<>();
+        for(int i=0;i<possibleDest.size();i++){
+            ChessboardPoint point = possibleDest.get(i);
+            int x = point.getRow();
+            int y = point.getCol();
+            if(y<=3){
+                if(model.isValidCapture(src,point)) {
+                    value.add(x + y+model.getChessPieceAt(point).getRank);
+                }else value.add(x+y);
+            }else{
+                if(model.isValidCapture(src,point)) {
+                    value.add(x + (6 - y)+model.getChessPieceAt(point).getRank);
+                }else value.add(x+(6-y));
+            }
         }
-        if(possibleDest.size()==0&&!isSrcExit){dest=new ChessboardPoint(0,3);}
-        if(possibleDest.size()==1){
-            int rank = 0;
-            dest=possibleDest.get(rank);
+        int max = value.get(0);
+        for(int i=1;i<possibleDest.size();i++){
+            if(value.get(i)>max){
+                max=value.get(i);
+            }
         }
-        if(possibleDest.size()>1){
-            int rank=random.nextInt(0, possibleDest.size());
-            dest=possibleDest.get(rank);
-        }
-        System.out.println("destok");
-        // 返回移动指令
-        System.out.println(dest);
-        possibleDest.clear();
+        int index = value.indexOf(max);
+        dest = possibleDest.get(index)
         return dest;
     }
+
 
     public void run(){
         src=src();
